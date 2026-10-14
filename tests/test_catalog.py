@@ -15,7 +15,7 @@ def _load_migrator():
 
 
 def test_validate_passes():
-    r = subprocess.run([sys.executable, "scripts/validate.py"], cwd=ROOT)
+    r = subprocess.run([sys.executable, "scripts/validate.py"], cwd=ROOT, check=False)
     assert r.returncode == 0
 
 
@@ -68,7 +68,7 @@ def test_probe_headless_failure_never_flags_dead(monkeypatch):
     # Headless rung can't run / can't reach -> stay blocked, never report dead.
     monkeypatch.setattr(mod, "_curl", lambda url, t, ua: mod.Probe(403, ""))
     monkeypatch.setattr(mod, "_probe_headless", lambda url, t: (None, "playwright not installed"))
-    code, note = mod._probe("https://bls.gov", 5, headless=True)
+    code, _note = mod._probe("https://bls.gov", 5, headless=True)
     assert code == 403  # block code preserved
     assert code in mod.BLOCK_CODES  # classified blocked, not dead, downstream
 

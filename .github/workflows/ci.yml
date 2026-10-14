@@ -37,7 +37,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt ruff
+      - name: Lint Python
+        run: ruff check .
       - name: Validate catalog entries
         run: python scripts/validate.py
       - name: Build index (must be committed and up to date)

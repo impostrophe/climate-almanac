@@ -38,7 +38,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
-from datetime import timezone, datetime
+from datetime import UTC, datetime
 from urllib.parse import urlparse
 
 API = "https://api.github.com"
@@ -211,7 +211,7 @@ def _outage_issue_body(host: str, group: list[dict], today: str) -> str:
 
 
 def reconcile(report: list[dict], gh: GitHub, threshold: int) -> None:
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = datetime.now(UTC).date().isoformat()
     flagged = [r for r in report if r.get("flagged")]
     by_host: dict[str, list[dict]] = defaultdict(list)
     for r in flagged:
@@ -299,7 +299,11 @@ def main() -> int:
                     help="print the plan; do not touch GitHub")
     args = ap.parse_args()
 
-    raw = open(args.report).read() if args.report else sys.stdin.read()
+    if args.report:
+        with open(args.report, encoding="utf-8") as report_file:
+            raw = report_file.read()
+    else:
+        raw = sys.stdin.read()
     report = json.loads(raw)
     if not isinstance(report, list):
         raise SystemExit("expected a JSON list from check_links.py --json")

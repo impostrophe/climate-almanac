@@ -38,7 +38,6 @@ import json
 import shutil
 import subprocess
 import tempfile
-
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -87,7 +86,7 @@ class Probe:
     needs the module registered in `sys.modules`, which that loader does not do.
     """
 
-    __slots__ = ("code", "note", "final_url", "redirect_chain")
+    __slots__ = ("code", "final_url", "note", "redirect_chain")
 
     def __init__(self, code, note="", final_url=None, redirect_chain=None):
         self.code = code
@@ -176,7 +175,7 @@ def _probe_headless(url: str, timeout: float) -> tuple[int | None, str]:
                 return (resp.status if resp else None), ""
             finally:
                 browser.close()
-    except Exception as exc:  # navigation timeout, challenge wall, launch failure
+    except Exception as exc:  # noqa: BLE001 - third-party browser failures are intentionally reported as blocked
         return None, f"headless {type(exc).__name__}"
 
 
